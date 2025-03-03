@@ -164,7 +164,7 @@
  }
 
  /** *******************************************************************************
-  * procedure implements the partition operation, following Loop Invariant 1b      *
+  * procedure implements the partition operation, following Loop Invariant 5      *
   *    the Reading on Quicksort referenced above                                   *
   *    in brief: array segment has pivot, then small, large, unprocessed elements  *
   *              left unprocessed endpoints examined, swapping uses swap function  *
@@ -206,16 +206,60 @@
   return left;
 }
  
+/** *******************************************************************************
+  * procedure implements the partition operation, following Loop Invariant 7      *
+  *    the Reading on Quicksort referenced above                                   *
+  *    in brief: array segment has pivot, then small, large, unprocessed elements  *
+  *              left unprocessed endpoints examined, swapping uses swap function  *
+  * @param   a      the array containing the segment to be partitioned             *
+  * @param   size   the size of array a                                            *
+  * @param   left   the index of the first array element in the partition          *
+  * @param   right  the index of the last array element in the partitionn          *
+  * @post    a[left] is moved to index mid, with left <= mid <= right              *
+  * @post    elements between left and right are permuted, so that                 *
+  *             a[left], ..., a[mid-1] <= a[mid]                                   *
+  *             a[mid+1], ..., a[right] >= a[mid]                                  *
+  * @post    elements outside left, ..., right are not changed                     *
+  * @returns mid                                                                   *
+  *********************************************************************************/
+ 
+ /* invariant 7:  partition, swapping many interations, plus separate swap */
+ int invariant7 (int a[ ], int size ,int first, int last) {
+  int pivot = a[last];
+  int left;
+  int right = last;
+  int temp;
+  
+  for (left = last; left >= first;) {
+    if (a[left] < pivot) {
+      left--;
+    }
+    else {
+      temp = a[left];
+      a[left] = a[right];
+      a[right] = temp;
+      left--;
+      right--;
+    }
+  }
+
+  temp = a[right + 1];
+  a[right + 1] = a[last];
+  a[last] = temp;
+
+  return right + 1;
+}
  /** *******************************************************************************
   * driver program for testing and timing partition algorithms                     *
   *********************************************************************************/
  
  int main ( ) {
    // identify partition procedures used and their decriptive names
-   #define numAlgs  3
+   #define numAlgs  4
    partitionType procArray [numAlgs] = {{"invariant 1a ", invariant1a   },
                                         {"invariant 1b ", invariant1b   },
-                                        {"invariant 5  ", invariant5 }};
+                                        {"invariant 5  ", invariant5 },
+                                        {"invariant 7  ", invariant7 }};
  
    // print output headers
    printf ("timing/testing of partition functions\n");
@@ -286,7 +330,7 @@
         elapsed_time = (end_time - start_time) / (double) CLOCKS_PER_SEC;
         printf ("%13.1lf ", elapsed_time - copy_time);
 
-        if (alg == 2){
+        if (alg >= 2){
           printf ("%3s  ", checkPivotSpot (pivotSpot, (size - 1)* 2, tempAsc, 0, size-1));
         }
         else{
@@ -317,7 +361,7 @@
         end_time = clock();
         elapsed_time = (end_time - start_time) / (double) CLOCKS_PER_SEC;
         printf ("%13.1lf ", elapsed_time - copy_time);
-        if (alg == 2){
+        if (alg >= 2){
           printf ("%3s ", checkPivotSpot (pivotSpot, ran[size - 1], tempRan, 0, size-1));
         }
         else{
@@ -349,7 +393,7 @@
         end_time = clock();
         elapsed_time = (end_time - start_time) / (double) CLOCKS_PER_SEC;
         printf ("%13.1lf ", elapsed_time - copy_time);
-        if (alg == 2){
+        if (alg >= 2){
           printf ("%3s ", checkPivotSpot (pivotSpot, 0, tempDes, 0, size-1));
         }
         else{
