@@ -251,9 +251,9 @@
 }
 
 int kthElement (int a[], const int size, const int k){
-  
+  if (k > size)
+    return -1;
   return kthElementHelper(a, size, k, 0, size - 1, -1);
-
 }
 
 int kthElementHelper (int a[], const int size, const int k, int l_index, int r_index, int middle){
@@ -330,6 +330,13 @@ int kthElementHelper (int a[], const int size, const int k, int l_index, int r_i
           }
         }
 
+        // for (int i = 0, k = 1; i < size / 10000; i++, k++){
+        //   if (kthElement(tempAsc, size, k) != i*2){
+        //     printf("\nFAIL!\n");
+        //   }
+        // }
+        // printf("\nPassed\n");
+
         end_time = clock();
         copy_time = ((end_time - start_time) / (double) CLOCKS_PER_SEC );
         if (printCopyTime)
@@ -362,6 +369,8 @@ int kthElementHelper (int a[], const int size, const int k, int l_index, int r_i
             tempRan[i] = ran[i];
           }
         }
+
+        
         end_time = clock();
         copy_time = ((end_time - start_time) / (double) CLOCKS_PER_SEC );
         if (printCopyTime)
@@ -396,6 +405,14 @@ int kthElementHelper (int a[], const int size, const int k, int l_index, int r_i
         }
         end_time = clock();
         copy_time = ((end_time - start_time) / (double) CLOCKS_PER_SEC );
+
+        // for (int i = 0, k = 1; i < size / 10000; i++, k++){
+        //   if (kthElement(tempDes, size, k) != i*2){
+        //     printf("\nFAIL!\n");
+        //   }
+        // }
+        // printf("\nPassed\n");
+
         if (printCopyTime)
           printf ("copy time:  %10.1lf", copy_time);
       
@@ -418,6 +435,8 @@ int kthElementHelper (int a[], const int size, const int k, int l_index, int r_i
           printf ("%3s ", checkPivotSpot (pivotSpot, 2*(size - 1), tempDes, 0, size-1));
         }
         printf ("\n");
+
+        
  
       } // end of loop for testing an algorithm
  
