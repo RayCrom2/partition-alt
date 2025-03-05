@@ -227,10 +227,10 @@
  int invariant7 (int a[ ], int size ,int first, int last) {
   int pivot = a[last];
   int left;
-  int right = last;
+  int right = last - 1;
   int temp;
   
-  for (left = last; left >= first;) {
+  for (left = last - 1; left >= first;) {
     if (a[left] < pivot) {
       left--;
     }
@@ -249,6 +249,22 @@
 
   return right + 1;
 }
+
+int kthElement (int a[], const int size, const int k){
+  
+  return kthElementHelper(a, size, k, 0, size - 1, -1);
+
+}
+
+int kthElementHelper (int a[], const int size, const int k, int l_index, int r_index, int middle){
+  middle = invariant5(a, size, l_index, r_index);
+  if (middle == k - 1)
+    return a[k - 1];
+  if (middle < k - 1)
+    return kthElementHelper(a, size, k, middle + 1, r_index, middle);
+  return kthElementHelper(a, size, k, l_index, middle - 1, middle);
+}
+
  /** *******************************************************************************
   * driver program for testing and timing partition algorithms                     *
   *********************************************************************************/
@@ -313,6 +329,7 @@
             tempAsc[i] = asc[i];
           }
         }
+
         end_time = clock();
         copy_time = ((end_time - start_time) / (double) CLOCKS_PER_SEC );
         if (printCopyTime)
@@ -390,6 +407,7 @@
           }
           pivotSpot = procArray[alg].proc (tempDes, size, 0, size-1);
         }
+
         end_time = clock();
         elapsed_time = (end_time - start_time) / (double) CLOCKS_PER_SEC;
         printf ("%13.1lf ", elapsed_time - copy_time);
