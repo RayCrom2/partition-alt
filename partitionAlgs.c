@@ -330,15 +330,9 @@ int kthElementHelper (int a[], const int size, const int k, int l_index, int r_i
           }
         }
 
-        // for (int i = 0, k = 1; i < size / 10000; i++, k++){
-        //   if (kthElement(tempAsc, size, k) != i*2){
-        //     printf("\nFAIL!\n");
-        //   }
-        // }
-        // printf("\nPassed\n");
-
         end_time = clock();
         copy_time = ((end_time - start_time) / (double) CLOCKS_PER_SEC );
+
         if (printCopyTime)
           printf ("copy time:  %10.1lf\n", copy_time);
       
@@ -435,6 +429,14 @@ int kthElementHelper (int a[], const int size, const int k, int l_index, int r_i
           printf ("%3s ", checkPivotSpot (pivotSpot, 2*(size - 1), tempDes, 0, size-1));
         }
         printf ("\n");
+
+        for (int i = 0, k = 1; i < size / 10000; i++, k++){
+          if (kthElement(tempAsc, size, k) != i*2){
+            printf("\nFAIL!\n");
+          }
+        }
+        printf("\nPassed\n");
+
 
         
  

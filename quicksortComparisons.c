@@ -97,6 +97,7 @@
   * @returns  mid                                                                  *
  / *********************************************************************************/
  int imprPartition (int a[ ], int size, int left, int right) {
+
    int temp;
    int randIndex = left + (rand() % (right - left + 1));
    temp = a[randIndex];
@@ -123,7 +124,7 @@
        }
    }
  
-   // swap a[left] with biggest small value
+  //  swap a[left] with biggest small value
    temp = a[left];
    a[left] = a[r_spot];
    a[r_spot] = temp;
@@ -231,18 +232,22 @@
       // timing for basoc quicksort
       printf ("basic quicksort    %7d", size);
       // ascending data
+      if (size <= 80000){
       start_time = clock ();
-      printf("\n%i\n", 1);
+      // printf("\n%i\n", 1);
 
       basicQuicksort (tempAsc, size);
       end_time = clock();
       elapsed_time = (end_time - start_time) / (double) CLOCKS_PER_SEC;
       printf ("%13.1lf", elapsed_time);
       printf ("  %2s", checkAscValues (tempAsc, size));
- 
-      // tandom data
+      }
+      else{
+        printf ("%17s", "----   ");
+      }
+      // random data
       start_time = clock ();
-      printf("\n%i\n", 2);
+      // printf("\n%i\n", 2);
 
       basicQuicksort (tempRan, size);
       end_time = clock();
@@ -251,8 +256,9 @@
       printf ("  %2s", checkAscending (tempRan, size));
  
       // descending data
+      if (size <= 80000){
       start_time = clock ();
-      printf("\n%i\n", 3);
+      // printf("\n%i\n", 3);
 
       basicQuicksort (tempDes, size);
       
@@ -261,6 +267,10 @@
       printf ("%14.1lf", elapsed_time);
       printf ("  %2s", checkAscValues (tempDes, size));
       printf ("\n");
+      }
+      else{
+        printf ("%16s", "----\n");
+      }
  
  
       /* * * * * * * * * test of improved quicksort * * * * * * * * * * * * * * */
@@ -275,7 +285,7 @@
       
       // ascending data
       start_time = clock ();
-      printf("\n%i\n", 4);
+      // printf("\n%i\n", 4);
 
       imprQuicksort (tempAsc, size);
       end_time = clock();
@@ -285,7 +295,7 @@
  
       // random data
       start_time = clock ();
-      printf("\n%i\n", 5);
+      // printf("\n%i\n", 5);
 
       imprQuicksort (tempRan, size);
       end_time = clock();
@@ -295,7 +305,7 @@
  
       // descending data
       start_time = clock ();
-      printf("\n%i\n", 6);
+      // printf("\n%i\n", 6);
 
       imprQuicksort (tempDes, size);
       end_time = clock();
