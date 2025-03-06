@@ -1,3 +1,139 @@
+
+/** ****************************************************************************
+  
+procedure implements the partition operation, following Loop Invariant 5      *
+the Reading on Quicksort referenced above                                   *
+in brief: array segment has pivot, then small, large, unprocessed elements  *
+left unprocessed endpoints examined, swapping uses swap function  *
+@param   a      the array containing the segment to be partitioned             *
+@param   size   the size of array a                                            *
+@param   left   the index of the first array element in the partition          *
+@param   right  the index of the second to last array element in the partition        *
+@post    a[last] is moved to index left, with left <= mid <= right              *
+@post    elements between left and right are permuted, so that                 *
+a[left], ..., a[mid-1] <= a[mid]                                   *
+a[mid+1], ..., a[right] >= a[mid]                                  *
+@post    elements outside left, ..., right are not changed                     *
+@returns left                                                                  *
+********************************************************************************* */
+
+/* invariant 5:  partition, swapping many interations, plus separate swap */
+int invariant5 (int a[ ], int size ,int first, int last) {
+int pivot = a[last];
+int left;
+int right = last - 1;
+int temp;
+
+for (left = first; left <= right;) {
+  if (a[left] < pivot) {
+    left++;
+  }
+  else {
+    temp = a[left];
+    a[left] = a[right];
+    a[right] = temp;
+    right--;
+  }
+}
+
+
+  temp = a[left];
+  a[left] = a[last];
+  a[last] = temp;
+
+  return left;
+}
+ 
+/** ***********************************************************************
+  
+procedure implements the partition operation, following Loop Invariant 7      *
+the Reading on Quicksort referenced above                                   *
+in brief: array segment has pivot, then small, large, unprocessed elements  *
+left unprocessed endpoints examined, swapping uses swap function  *
+@param   a      the array containing the segment to be partitioned             *
+@param   size   the size of array a                                            *
+@param   left   the index of the second to last array element in the partition          *
+@param   right  the index of the second to last array element in the partitionn          *
+@post    a[right + 1] is moved to index last, with left <= mid <= right              *
+@post    elements between left and right are permuted, so that                 *
+a[left], ..., a[mid-1] <= a[mid]                                   *
+a[mid+1], ..., a[right] >= a[mid]                                  *
+@post    elements outside left, ..., right are not changed                     *
+@returns mid                                                                   *
+************************************************************************* */
+
+/* invariant 7:  partition, swapping many interations, plus separate swap */
+int invariant7 (int a[ ], int size ,int first, int last) {
+int pivot = a[last];
+int left;
+int right = last - 1;
+int temp;
+
+for (left = last - 1; left >= first;) {
+  if (a[left] < pivot) {
+    left--;
+  }
+  else {
+    temp = a[left];
+    a[left] = a[right];
+    a[right] = temp;
+    left--;
+    right--;
+  }
+}
+
+
+  temp = a[right + 1];
+  a[right + 1] = a[last];
+  a[last] = temp;
+
+  return right + 1;
+}
+
+ /* kth element */
+int kthElement (int a[], const int size, const int k){
+  if (k > size)
+    return -1;
+  return kthElementHelper(a, size, k, 0, size - 1, -1);
+}
+
+/** *******************************************************************************
+  * procedure implements the kth element operation,      *
+  *    in brief: array segment is partitioned until it finds the kth smallest element at the pivot  *
+  * @param   a      the array containing the segment to be searched             *
+  * @param   size   the size of array a                                            *
+  * @param   k      the kth smallest element                                             *
+  * @param   l_index      the first element in the array to be searched                             *
+  * @param   r_index      the last element in the array to be searched                               *
+  * @param   middle      the location of the pivot to compare                                       *
+  
+  * @post    elements in array permuted, so that                 *
+  *             a[left], ..., a[(size/2)-1] <= a[size/2]                                   *
+  *             a[(size/2)+1], ..., a[right] >= a[size/2]                                  *
+  * @returns value of kth smallest element                                         *
+  *********************************************************************************/
+ 
+ /* kth element helper */
+int kthElementHelper (int a[], const int size, const int k, int l_index, int r_index, int middle){
+  middle = invariant5(a, size, l_index, r_index);
+  if (middle == k - 1)
+    return a[k - 1];
+  if (middle < k - 1)
+    return kthElementHelper(a, size, k, middle + 1, r_index, middle);
+  return kthElementHelper(a, size, k, l_index, middle - 1, middle);
+}
+
+//to test kthElement
+for (int alg = 0; alg < numAlgs; alg++) {
+  for (int i = 0, k = 1; i < 1000000 / 50000; i++, k++){
+          if (kthElement(tempAsc, size, k) != i*2 && kthElement(tempDes, size, k) != 2*(size - i - 1)){
+            printf("\nFAIL!\n");
+          }
+        }
+        printf("\nPassed\n");
+}
+
+//output of just the partition functions
 timing/testing of partition functions
                Data Set                             Times
 Algorithm        Size     Ascending Order       Random Order  Descending Order
@@ -25,3 +161,390 @@ invariant 1a  1600000          1.8 OK!           10.8 OK!           1.8 OK!
 invariant 1b  1600000          4.7 OK!            8.9 OK!           1.7 OK! 
 invariant 5   1600000          2.2 OK!            6.1 OK!           5.0 OK! 
 invariant 7   1600000          2.2 OK!            6.5 OK!           4.9 OK! 
+
+//output of partition functions at size 100000 with the kthElement checks
+timing/testing of partition functions
+               Data Set                             Times
+Algorithm        Size     Ascending Order       Random Order  Descending Order
+invariant 1a   100000          0.2 OK!            0.3 OK!           0.1 OK! 
+
+Passed
+invariant 1b   100000          0.3 OK!            0.3 OK!           0.1 OK! 
+
+Passed
+invariant 5    100000          0.2 OK!            0.5 OK!           0.3 OK! 
+
+Passed
+invariant 7    100000          0.1 OK!            0.5 OK!           0.3 OK! 
+
+Passed
+
+//revised imprPartition
+/** *******************************************************************************
+  * procedure implements the partition operation, following Loop Invariant 1a      *
+  *    the Reading on Quicksort referenced above                                   *
+  *    in brief: array segment has pivot, then small, unprocessed, large elements  *
+  *              both unprocessed endpoints examined, swapping done in line        *
+  * @param   a      the array containing the segment to be partitioned             *
+  * @param   size   the size of array a                                            *
+  * @param   left   the index of the first array element in the partition           *
+                    (which is switched with a random value in the array)              *
+  * @param   right  the index of the last array element in the partitionn          *
+  * @post    a[left] is moved to index mid, with left <= mid <= right              *
+  * @post    elements between left and right are permuted, so that                 *
+  *             a[left], ..., a[mid-1] <= a[mid]                                   *
+  *             a[mid+1], ..., a[right] >= a[mid]                                  *
+  * @post    elements outside left, ..., right are not changed                     *
+  * @returns  mid                                                                  *
+ / *********************************************************************************/
+ int imprPartition (int a[ ], int size, int left, int right) {
+
+   int temp;
+   int randIndex = left + (rand() % (right - left + 1));
+   temp = a[randIndex];
+   a[randIndex] = a[left];
+   a[left] = temp;
+
+   int pivot = a[left];
+   int l_spot = left+1;
+   int r_spot = right;
+   
+   while (l_spot <= r_spot) {
+     while( (l_spot <= r_spot) && (a[r_spot] >= pivot))
+       r_spot--;
+     while ((l_spot <= r_spot) && (a[l_spot] <= pivot)) 
+       l_spot++;
+ 
+     // if misplaced small and large values found, swap them
+     if (l_spot < r_spot) {
+       temp = a[l_spot];
+       a[l_spot] = a[r_spot];
+       a[r_spot] = temp;
+       l_spot++;
+       r_spot--;
+       }
+   }
+ 
+  //  swap a[left] with biggest small value
+   temp = a[left];
+   a[left] = a[r_spot];
+   a[r_spot] = temp;
+   return r_spot;
+ }
+ 
+
+                    Data Set                   Times
+Algorithm             Size     Ascending Order   Random Order  Descending Order
+basic quicksort      40000          1.0  ok        0.0  ok           0.9  ok
+improved quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+basic quicksort      80000          3.6  ok        0.0  ok           3.7  ok
+improved quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+basic quicksort     160000          ----           0.0  ok           ----
+improved quicksort  160000          0.0  ok        0.0  ok           0.0  ok
+
+basic quicksort     320000          ----           0.0  ok           ----
+improved quicksort  320000          0.0  ok        0.0  ok           0.0  ok
+
+basic quicksort     640000          ----           0.1  ok           ----
+improved quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+basic quicksort    1280000          ----           0.2  ok           ----
+improved quicksort 1280000          0.1  ok        0.2  ok           0.1  ok
+
+basic quicksort    2560000          ----           0.3  ok           ----
+improved quicksort 2560000          0.2  ok        0.4  ok           0.2  ok
+
+basic quicksort    5120000          ----           0.7  ok           ----
+improved quicksort 5120000          0.3  ok        0.8  ok           0.4  ok
+
+ /* * * * * * * * hybrid quicksort and helper functions * * * * * * * * * * */
+ 
+ /** *******************************************************************************
+  * procedure implements the partition operation, following Loop Invariant 1a      *
+  *    the Reading on Quicksort referenced above                                   *
+  *    in brief: array segment has pivot, then small, unprocessed, large elements  *
+  *              both unprocessed endpoints examined, swapping done in line        *
+  * @param   a      the array containing the segment to be partitioned             *
+  * @param   size   the size of array a                                            *
+  * @param   left   the index of the first array element in the partition          *
+  * @param   right  the index of the last array element in the partitionn          *
+  * @post    a[left] is moved to index mid, with left <= mid <= right              *
+  * @post    elements between left and right are permuted, so that                 *
+  *             a[left], ..., a[mid-1] <= a[mid]                                   *
+  *             a[mid+1], ..., a[right] >= a[mid]                                  *
+  * @post    elements outside left, ..., right are not changed                     *
+  * @returns  mid                                                                  *
+ / *********************************************************************************/
+ int hybridPartition (int a[ ], int size, int left, int right) {
+
+  int temp;
+  int randIndex = left + (rand() % (right - left + 1));
+  temp = a[randIndex];
+  a[randIndex] = a[left];
+  a[left] = temp;
+
+  int pivot = a[left];
+  int l_spot = left+1;
+  int r_spot = right;
+  
+  while (l_spot <= r_spot) {
+    while( (l_spot <= r_spot) && (a[r_spot] >= pivot))
+      r_spot--;
+    while ((l_spot <= r_spot) && (a[l_spot] <= pivot)) 
+      l_spot++;
+
+    // if misplaced small and large values found, swap them
+    if (l_spot < r_spot) {
+      temp = a[l_spot];
+      a[l_spot] = a[r_spot];
+      a[r_spot] = temp;
+      l_spot++;
+      r_spot--;
+      }
+  }
+
+ //  swap a[left] with biggest small value
+  temp = a[left];
+  a[left] = a[r_spot];
+  a[r_spot] = temp;
+  return r_spot;
+}
+
+/** *******************************************************************************
+ * Quicksort helper function                                                      *
+ * @param  a  the array to be processed                                           *
+ * @param  size  the size of the array                                            *
+ * @param  left  the lower index for items to be processed                        *
+ * @param  right the upper index for items to be processed                        *
+ * @post  sorts elements of a between left and right                              *
+ *********************************************************************************/
+void hybridQuicksortHelper (int a [ ], int size, int left, int right, const int maxSize) {
+  if (left > right)
+    return;
+  int mid = imprPartition (a, size, left, right);
+  if (mid - left < maxSize){
+    insertionSort(a, left, mid - 1);
+    insertionSort(a, mid + 1, right);
+  }
+  else{
+    hybridQuicksortHelper (a, size, left, mid-1, maxSize);
+    hybridQuicksortHelper (a, size, mid+1, right, maxSize);
+  }
+}
+
+/** *******************************************************************************
+ * quicksort, main function                                                       *
+ * @param  a  the array to be sorted                                              *
+ * @param  n  the size of the array                                               *
+ * @post  the first n elements of a are sorted in non-descending order            *
+  ********************************************************************************/
+void hybridQuicksort (int a [ ], int n, int maxSize) {
+  hybridQuicksortHelper (a, n, 0, n-1, maxSize);
+}
+
+void insertionSort(int arr[], int left, int right) {
+
+  // Starting from the second element
+  for (int i = left; i <= right; i++) {
+      int key = arr[i];
+      int j = i - 1;
+
+      // Move elements of arr[0..i-1], that are
+        // greater than key, to one position to
+        // the right of their current position
+      while (j >= 0 && arr[j] > key) {
+          arr[j + 1] = arr[j];
+          j = j - 1;
+      }
+
+      // Move the key to its correct position
+      arr[j + 1] = key;
+  }
+}
+//hybrid sort output
+
+Testing size 4
+hybrid quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  160000          0.0  ok        0.6  ok           0.0  ok
+
+hybrid quicksort  320000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort 1280000          0.1  ok        0.2  ok           0.1  ok
+
+hybrid quicksort 2560000          0.2  ok        0.4  ok           0.1  ok
+
+hybrid quicksort 5120000          0.3  ok        2.2  ok           0.3  ok
+
+hybrid quicksort 10240000          0.6  ok        1.9  ok           0.6  ok
+
+hybrid quicksort 20480000          1.2  ok        3.9  ok           1.3  ok
+
+hybrid quicksort 40960000          2.6  ok        8.3  ok           2.7  ok
+
+Testing size 5
+hybrid quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  160000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  320000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort 1280000          0.1  ok        0.2  ok           0.1  ok
+
+hybrid quicksort 2560000          0.1  ok        0.4  ok           0.1  ok
+
+hybrid quicksort 5120000          0.2  ok        0.9  ok           0.3  ok
+
+hybrid quicksort 10240000          0.6  ok        2.0  ok           0.6  ok
+
+hybrid quicksort 20480000          1.3  ok        4.4  ok           1.3  ok
+
+hybrid quicksort 40960000          2.5  ok        9.0  ok           2.5  ok
+
+Testing size 6
+hybrid quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  160000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  320000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort 1280000          0.1  ok        0.2  ok           0.1  ok
+
+hybrid quicksort 2560000          0.1  ok        0.5  ok           0.1  ok
+
+hybrid quicksort 5120000          0.3  ok        1.1  ok           0.3  ok
+
+hybrid quicksort 10240000          0.6  ok        2.4  ok           0.6  ok
+
+hybrid quicksort 20480000          1.0  ok        4.1  ok           1.3  ok
+
+hybrid quicksort 40960000          2.2  ok        9.0  ok           2.5  ok
+
+Testing size 7
+hybrid quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  160000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  320000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort 1280000          0.1  ok        0.2  ok           0.1  ok
+
+hybrid quicksort 2560000          0.1  ok        0.5  ok           0.2  ok
+
+hybrid quicksort 5120000          0.3  ok        1.0  ok           0.3  ok
+
+hybrid quicksort 10240000          0.5  ok        2.0  ok           0.6  ok
+
+hybrid quicksort 20480000          1.1  ok        5.0  ok           1.3  ok
+
+hybrid quicksort 40960000          2.2  ok       51.8  ok           1.8  ok
+
+Testing size 8
+hybrid quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  160000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  320000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort 1280000          0.0  ok        0.2  ok           0.0  ok
+
+hybrid quicksort 2560000          0.1  ok        0.5  ok           0.1  ok
+
+hybrid quicksort 5120000          0.2  ok        0.8  ok           0.2  ok
+
+hybrid quicksort 10240000          0.4  ok        1.9  ok           0.4  ok
+
+hybrid quicksort 20480000          0.9  ok        3.6  ok           0.9  ok
+
+hybrid quicksort 40960000          1.8  ok       14.5  ok           1.9  ok
+
+Testing size 9
+hybrid quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  160000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  320000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort 1280000          0.0  ok        0.2  ok           0.0  ok
+
+hybrid quicksort 2560000          0.1  ok        0.4  ok           0.1  ok
+
+hybrid quicksort 5120000          0.2  ok        0.9  ok           0.2  ok
+
+hybrid quicksort 10240000          0.4  ok        2.0  ok           0.5  ok
+
+hybrid quicksort 20480000          0.8  ok        3.8  ok           0.9  ok
+
+hybrid quicksort 40960000          1.8  ok        8.3  ok           1.8  ok
+
+Testing size 10
+hybrid quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  160000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  320000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort 1280000          0.0  ok        0.5  ok           0.0  ok
+
+hybrid quicksort 2560000          0.1  ok        0.4  ok           0.1  ok
+
+hybrid quicksort 5120000          0.2  ok        0.9  ok           0.2  ok
+
+hybrid quicksort 10240000          0.4  ok        1.7  ok           0.4  ok
+
+hybrid quicksort 20480000          0.8  ok        3.6  ok           0.8  ok
+
+hybrid quicksort 40960000          1.7  ok        8.0  ok           1.8  ok
+
+Testing size 11
+hybrid quicksort   40000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort   80000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  160000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  320000          0.0  ok        0.0  ok           0.0  ok
+
+hybrid quicksort  640000          0.0  ok        0.1  ok           0.0  ok
+
+hybrid quicksort 1280000          0.0  ok        0.2  ok           0.0  ok
+
+hybrid quicksort 2560000          0.1  ok        0.4  ok           0.1  ok
+
+hybrid quicksort 5120000          0.2  ok        1.2  ok           0.2  ok
+
+hybrid quicksort 10240000          0.4  ok        1.9  ok           0.4  ok
+
+hybrid quicksort 20480000          0.8  ok        4.0  ok           0.9  ok
+
+hybrid quicksort 40960000          1.7  ok        7.9  ok           1.7  ok

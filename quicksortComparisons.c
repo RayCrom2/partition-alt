@@ -434,7 +434,9 @@ void insertionSort(int arr[], int left, int right) {
    } // end of loop for testing procedures with different array sizes
 
 /* * * * * * * * * test of hybrid quicksort * * * * * * * * * * * * * * */
-   for (int maxSize = 4, size = 40000; size <= 40960000; maxSize++, size *= 2) {
+for (int maxSize = 4; maxSize <= 11; maxSize++){
+  printf("Testing size %i\n", maxSize);
+   for (size = 40000; size <= 40960000; size *= 2) {
     int * asc = (int *) malloc (size * sizeof(int));   //array with ascending data
       int * ran = (int *) malloc (size * sizeof(int));   //array with random data
       int * des = (int *) malloc (size * sizeof(int));   // array with descending data
@@ -505,5 +507,6 @@ void insertionSort(int arr[], int left, int right) {
       free (ran);
       free (des);
    }
+  }
    return 0;
  }

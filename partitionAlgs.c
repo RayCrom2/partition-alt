@@ -250,12 +250,43 @@
   return right + 1;
 }
 
+/** *******************************************************************************
+  * procedure implements the kth element operation,      *
+  *    in brief: array segment is partitioned until it finds the kth smallest element at the pivot  *
+  * @param   a      the array containing the segment to be searched             *
+  * @param   size   the size of array a                                            *
+  * @param   k      the kth smallest element                                             *
+  * 
+  * @post    elements in array permuted, so that                 *
+  *             a[left], ..., a[(size/2)-1] <= a[size/2]                                   *
+  *             a[(size/2)+1], ..., a[right] >= a[size/2]                                  *
+  * @returns value of kth smallest element                                         *
+  *********************************************************************************/
+ 
+ /* kth element */
 int kthElement (int a[], const int size, const int k){
   if (k > size)
     return -1;
   return kthElementHelper(a, size, k, 0, size - 1, -1);
 }
 
+/** *******************************************************************************
+  * procedure implements the kth element operation,      *
+  *    in brief: array segment is partitioned until it finds the kth smallest element at the pivot  *
+  * @param   a      the array containing the segment to be searched             *
+  * @param   size   the size of array a                                            *
+  * @param   k      the kth smallest element                                             *
+  * @param   l_index      the first element in the array to be searched                             *
+  * @param   r_index      the last element in the array to be searched                               *
+  * @param   middle      the location of the pivot to compare                                       *
+  
+  * @post    elements in array permuted, so that                 *
+  *             a[left], ..., a[(size/2)-1] <= a[size/2]                                   *
+  *             a[(size/2)+1], ..., a[right] >= a[size/2]                                  *
+  * @returns value of kth smallest element                                         *
+  *********************************************************************************/
+ 
+ /* kth element helper */
 int kthElementHelper (int a[], const int size, const int k, int l_index, int r_index, int middle){
   middle = invariant5(a, size, l_index, r_index);
   if (middle == k - 1)
@@ -400,12 +431,7 @@ int kthElementHelper (int a[], const int size, const int k, int l_index, int r_i
         end_time = clock();
         copy_time = ((end_time - start_time) / (double) CLOCKS_PER_SEC );
 
-        // for (int i = 0, k = 1; i < size / 10000; i++, k++){
-        //   if (kthElement(tempDes, size, k) != i*2){
-        //     printf("\nFAIL!\n");
-        //   }
-        // }
-        // printf("\nPassed\n");
+        
 
         if (printCopyTime)
           printf ("copy time:  %10.1lf", copy_time);
@@ -428,10 +454,9 @@ int kthElementHelper (int a[], const int size, const int k, int l_index, int r_i
         else{
           printf ("%3s ", checkPivotSpot (pivotSpot, 2*(size - 1), tempDes, 0, size-1));
         }
-        printf ("\n");
-
-        for (int i = 0, k = 1; i < size / 10000; i++, k++){
-          if (kthElement(tempAsc, size, k) != i*2){
+        printf("\n");
+        for (int i = 0, k = 1; i < size / 50000; i++, k++){
+          if (kthElement(tempAsc, size, k) != i*2 && kthElement(tempDes, size, k) != 2*(size - i - 1)){
             printf("\nFAIL!\n");
           }
         }
