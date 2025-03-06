@@ -156,6 +156,111 @@
  void imprQuicksort (int a [ ], int n) {
    imprQuicksortHelper (a, n, 0, n-1);
  }
+
+  /* * * * * * * * hybrid quicksort and helper functions * * * * * * * * * * */
+ 
+ /** *******************************************************************************
+  * procedure implements the partition operation, following Loop Invariant 1a      *
+  *    the Reading on Quicksort referenced above                                   *
+  *    in brief: array segment has pivot, then small, unprocessed, large elements  *
+  *              both unprocessed endpoints examined, swapping done in line        *
+  * @param   a      the array containing the segment to be partitioned             *
+  * @param   size   the size of array a                                            *
+  * @param   left   the index of the first array element in the partition          *
+  * @param   right  the index of the last array element in the partitionn          *
+  * @post    a[left] is moved to index mid, with left <= mid <= right              *
+  * @post    elements between left and right are permuted, so that                 *
+  *             a[left], ..., a[mid-1] <= a[mid]                                   *
+  *             a[mid+1], ..., a[right] >= a[mid]                                  *
+  * @post    elements outside left, ..., right are not changed                     *
+  * @returns  mid                                                                  *
+ / *********************************************************************************/
+ int hybridPartition (int a[ ], int size, int left, int right) {
+
+  int temp;
+  int randIndex = left + (rand() % (right - left + 1));
+  temp = a[randIndex];
+  a[randIndex] = a[left];
+  a[left] = temp;
+
+  int pivot = a[left];
+  int l_spot = left+1;
+  int r_spot = right;
+  
+  while (l_spot <= r_spot) {
+    while( (l_spot <= r_spot) && (a[r_spot] >= pivot))
+      r_spot--;
+    while ((l_spot <= r_spot) && (a[l_spot] <= pivot)) 
+      l_spot++;
+
+    // if misplaced small and large values found, swap them
+    if (l_spot < r_spot) {
+      temp = a[l_spot];
+      a[l_spot] = a[r_spot];
+      a[r_spot] = temp;
+      l_spot++;
+      r_spot--;
+      }
+  }
+
+ //  swap a[left] with biggest small value
+  temp = a[left];
+  a[left] = a[r_spot];
+  a[r_spot] = temp;
+  return r_spot;
+}
+
+/** *******************************************************************************
+ * Quicksort helper function                                                      *
+ * @param  a  the array to be processed                                           *
+ * @param  size  the size of the array                                            *
+ * @param  left  the lower index for items to be processed                        *
+ * @param  right the upper index for items to be processed                        *
+ * @post  sorts elements of a between left and right                              *
+ *********************************************************************************/
+void hybridQuicksortHelper (int a [ ], int size, int left, int right, const int maxSize) {
+  if (left > right)
+    return;
+  int mid = imprPartition (a, size, left, right);
+  if (mid - left < maxSize){
+    insertionSort(a, left, mid - 1);
+    insertionSort(a, mid + 1, right);
+  }
+  else{
+    hybridQuicksortHelper (a, size, left, mid-1, maxSize);
+    hybridQuicksortHelper (a, size, mid+1, right, maxSize);
+  }
+}
+
+/** *******************************************************************************
+ * quicksort, main function                                                       *
+ * @param  a  the array to be sorted                                              *
+ * @param  n  the size of the array                                               *
+ * @post  the first n elements of a are sorted in non-descending order            *
+  ********************************************************************************/
+void hybridQuicksort (int a [ ], int n, int maxSize) {
+  hybridQuicksortHelper (a, n, 0, n-1, maxSize);
+}
+
+void insertionSort(int arr[], int left, int right) {
+
+  // Starting from the second element
+  for (int i = left; i <= right; i++) {
+      int key = arr[i];
+      int j = i - 1;
+
+      // Move elements of arr[0..i-1], that are
+        // greater than key, to one position to
+        // the right of their current position
+      while (j >= 0 && arr[j] > key) {
+          arr[j + 1] = arr[j];
+          j = j - 1;
+      }
+
+      // Move the key to its correct position
+      arr[j + 1] = key;
+  }
+}
  
  /* * * * * * * * * * * * procedures to check sorting correctness  * * * * * * * * * */
  
@@ -313,6 +418,8 @@
       printf ("%14.1lf", elapsed_time);
       printf ("  %2s", checkAscValues (tempDes, size));
       printf ("\n\n");
+
+      
       
       // clean up copies of test arrays
       free (tempAsc);
@@ -325,6 +432,78 @@
       free (des);
       
    } // end of loop for testing procedures with different array sizes
+
+/* * * * * * * * * test of hybrid quicksort * * * * * * * * * * * * * * */
+   for (int maxSize = 4, size = 40000; size <= 40960000; maxSize++, size *= 2) {
+    int * asc = (int *) malloc (size * sizeof(int));   //array with ascending data
+      int * ran = (int *) malloc (size * sizeof(int));   //array with random data
+      int * des = (int *) malloc (size * sizeof(int));   // array with descending data
+      
+      int i;
+      for (i = 0; i< size; i++) {
+         asc[i] = 2*i;
+         ran[i] = rand();
+         des[i] = 2*(size - i - 1); 
+      } 
  
+      // timing variables
+      clock_t start_time, end_time;
+      double elapsed_time;
+ 
+      // copy to test arrays
+      int * tempAsc = (int *) malloc (size * sizeof(int));
+      int * tempRan = (int *) malloc (size * sizeof(int));
+      int * tempDes = (int *) malloc (size * sizeof(int));
+
+      for (i = 0; i< size; i++) {
+        tempAsc[i] = asc[i];
+        tempRan[i] = ran[i];
+        tempDes[i] = des[i];
+     }
+     
+     // timing for improved quicksort
+     printf ("hybrid quicksort %7d", size);
+     
+     // ascending data
+     start_time = clock ();
+     // printf("\n%i\n", 4);
+
+     hybridQuicksort (tempAsc, size, maxSize);
+     end_time = clock();
+     elapsed_time = (end_time - start_time) / (double) CLOCKS_PER_SEC;
+     printf ("%13.1lf", elapsed_time);
+     printf ("  %2s", checkAscValues (tempAsc, size));
+
+     // random data
+     start_time = clock ();
+     // printf("\n%i\n", 5);
+
+     hybridQuicksort (tempRan, size, maxSize);
+     end_time = clock();
+     elapsed_time = (end_time - start_time) / (double) CLOCKS_PER_SEC;
+     printf ("%11.1lf", elapsed_time);
+     printf ("  %2s", checkAscending (tempRan, size));
+
+     // descending data
+     start_time = clock ();
+     // printf("\n%i\n", 6);
+
+     hybridQuicksort (tempDes, size, maxSize);
+     end_time = clock();
+     elapsed_time = (end_time - start_time) / (double) CLOCKS_PER_SEC;
+     printf ("%14.1lf", elapsed_time);
+     printf ("  %2s", checkAscValues (tempDes, size));
+     printf ("\n\n");
+
+      // clean up copies of test arrays
+      free (tempAsc);
+      free (tempRan);
+      free (tempDes);
+ 
+      // clean up original test arrays
+      free (asc);
+      free (ran);
+      free (des);
+   }
    return 0;
  }
